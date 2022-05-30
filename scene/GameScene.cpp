@@ -69,18 +69,17 @@ void GameScene::Initialize() {
 
 
 	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-			for (int k = 0; k < 9; k++) {
-				//ワールドトランスフォームの初期化
-				worldTransforms_[i][j][k].Initialize();
-				worldTransforms_[i][j][k].scale_ = { 1,1,1 };
-				worldTransforms_[i][j][k].rotation_ = { 0,0,0 };
-				worldTransforms_[i][j][k].translation_ = { i * 4.0f - 16.0f,j * 4.0f - 16.0f,k * 4.0f };
-				worldTransforms_[i][j][k].MatUpdate();
-			}
-		}
+
+		radian[i] = MathUtility::Radian(40 * i);
+		//ワールドトランスフォームの初期化
+		worldTransforms_[i].Initialize();
+		worldTransforms_[i].scale_ = { 1,1,1 };
+		worldTransforms_[i].rotation_ = { 0,0,0 };
+		worldTransforms_[i].translation_ = { sinf(radian[i]) * 10,cosf(radian[i]) * 10,0};
+		worldTransforms_[i].MatUpdate();
+
 	}
-	
+
 
 
 }
@@ -146,26 +145,26 @@ void GameScene::Update() {
 
 	//上方向回転処理
 	{
-	//	//上方向の回転速さ[ラジアン/frame]
-	//	const float kUpRotSpeed = 0.05f;
+		//	//上方向の回転速さ[ラジアン/frame]
+		//	const float kUpRotSpeed = 0.05f;
 
-	//	//押した方向で移動ベクトルを変更
-	//	if (input_->PushKey(DIK_SPACE)) {
-	//		viewAngle += kUpRotSpeed;
-	//		//2πを超えたら0に戻す
-	//		viewAngle = fmodf(viewAngle, MathUtility::PI * 2.0f);
-	//	}
+		//	//押した方向で移動ベクトルを変更
+		//	if (input_->PushKey(DIK_SPACE)) {
+		//		viewAngle += kUpRotSpeed;
+		//		//2πを超えたら0に戻す
+		//		viewAngle = fmodf(viewAngle, MathUtility::PI * 2.0f);
+		//	}
 
-	//	//上方向ベクトルを計算
-	//	viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
+		//	//上方向ベクトルを計算
+		//	viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
 
-	//	//行列の再計算
-	//	viewProjection_.UpdateMatrix();
+		//	//行列の再計算
+		//	viewProjection_.UpdateMatrix();
 
-	//	debugText_->SetPos(50, 90);
-	//	debugText_->Printf(
-	//		"up(%f,%f,%f", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
-	
+		//	debugText_->SetPos(50, 90);
+		//	debugText_->Printf(
+		//		"up(%f,%f,%f", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+
 	}
 
 	//FoV変更処理
@@ -248,7 +247,13 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	
+	for (int i = 0; i < 9; i++) {
+		radian[i] -= 0.05f;
+		radian[i] = fmodf(radian[i], MathUtility::PI * 2.0f);
+		worldTransforms_[i].translation_ = { sinf(radian[i]) * 10,cosf(radian[i]) * 10,0 };
+		worldTransforms_[i].MatUpdate();
+	}
+
 }
 
 void GameScene::Draw() {
@@ -281,15 +286,13 @@ void GameScene::Draw() {
 	//3Dモデル描画
 		//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
 	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
-	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-			for (int k = 0; k < 9;k++) {
-				model_->Draw(worldTransforms_[i][j][k], viewProjection_, texutureHandle_);
-			}
-		}
-}
-	
-	
+
+	for (int k = 0; k < 9; k++) {
+		model_->Draw(worldTransforms_[k], viewProjection_, texutureHandle_);
+	}
+
+
+
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

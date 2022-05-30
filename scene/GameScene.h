@@ -55,7 +55,7 @@ class GameScene {
 	Model* model_ = nullptr;
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[9][9][9];
+	WorldTransform worldTransforms_[9];
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -65,6 +65,7 @@ class GameScene {
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
 
+	float radian[9] = {};
 
 public:
 	//パーツID
