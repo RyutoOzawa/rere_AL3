@@ -68,21 +68,18 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
 
-	for (int i = 0; i < 20;i++) {
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
 
-		//ワールドトランスフォームの初期化
-		worldTransforms_[i].Initialize();
-		worldTransforms_[i].scale_ = { 3,3,3 };
-		worldTransforms_[i].rotation_ = { 0,0,0 };
-		worldTransforms_[i].translation_ = { i * 6.0f - 35.0f,-20.0f,0.0f};
-		worldTransforms_[i].MatUpdate();
-		worldTransforms2_[i].Initialize();
-		worldTransforms2_[i].scale_ = { 3,3,3 };
-		worldTransforms2_[i].rotation_ = { 0,0,0 };
-		worldTransforms2_[i].translation_ = { i * 6.0f - 35.0f,20.0f,0.0f };
-		worldTransforms2_[i].MatUpdate();
-	}					
-
+			//ワールドトランスフォームの初期化
+			worldTransforms_[i][j].Initialize();
+			worldTransforms_[i][j].scale_ = {1,1,1};
+			worldTransforms_[i][j].rotation_ = { 0,0,0 };
+			worldTransforms_[i][j].translation_ = {i * 4.0f - 16.0f,j * 4.0f - 16.0f,0.0f };
+			worldTransforms_[i][j].MatUpdate();
+	
+		}
+	}
 	
 
 
@@ -284,12 +281,14 @@ void GameScene::Draw() {
 	//3Dモデル描画
 		//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
 	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
-	for (WorldTransform& worldTransform : worldTransforms_) {
-		model_->Draw(worldTransform, viewProjection_, texutureHandle_);
-	}
-	for (WorldTransform& worldTransform : worldTransforms2_) {
-		model_->Draw(worldTransform, viewProjection_, texutureHandle_);
-	}
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (i % 2 != 1|| j % 2 != 1) {
+				model_->Draw(worldTransforms_[i][j], viewProjection_, texutureHandle_);
+			}
+		}
+}
+	
 	
 
 	// 3Dオブジェクト描画後処理
