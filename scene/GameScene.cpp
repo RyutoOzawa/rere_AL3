@@ -70,14 +70,14 @@ void GameScene::Initialize() {
 
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
-
-			//ワールドトランスフォームの初期化
-			worldTransforms_[i][j].Initialize();
-			worldTransforms_[i][j].scale_ = {1,1,1};
-			worldTransforms_[i][j].rotation_ = { 0,0,0 };
-			worldTransforms_[i][j].translation_ = {i * 4.0f - 16.0f,j * 4.0f - 16.0f,0.0f };
-			worldTransforms_[i][j].MatUpdate();
-	
+			for (int k = 0; k < 9; k++) {
+				//ワールドトランスフォームの初期化
+				worldTransforms_[i][j][k].Initialize();
+				worldTransforms_[i][j][k].scale_ = { 1,1,1 };
+				worldTransforms_[i][j][k].rotation_ = { 0,0,0 };
+				worldTransforms_[i][j][k].translation_ = { i * 4.0f - 16.0f,j * 4.0f - 16.0f,k * 4.0f };
+				worldTransforms_[i][j][k].MatUpdate();
+			}
 		}
 	}
 	
@@ -283,8 +283,8 @@ void GameScene::Draw() {
 	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
-			if (i % 2 != 1|| j % 2 != 1) {
-				model_->Draw(worldTransforms_[i][j], viewProjection_, texutureHandle_);
+			for (int k = 0; k < 9;k++) {
+				model_->Draw(worldTransforms_[i][j][k], viewProjection_, texutureHandle_);
 			}
 		}
 }
