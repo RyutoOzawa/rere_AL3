@@ -55,7 +55,7 @@ class GameScene {
 	Model* model_ = nullptr;
 
 	//ワールドトランスフォーム
-	WorldTransform worldTransforms_[9];
+	WorldTransform worldTransforms_[4];
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
@@ -74,14 +74,9 @@ public:
 	//パーツID
 	enum PartId {
 		kRoot,	//大元
-		kSpine,	//脊髄
-		kChest,	//胸
 		kHead,	//頭
 		kArmL,	//左腕
 		kArmR,	//右腕
-		kHip,	//尻
-		kLegL,	//左足
-		kLegR,	//右足
 
 		kNumPartId
 	};

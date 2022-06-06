@@ -37,7 +37,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	//カメラ視点座標を設定
-	//viewProjection_.eye = { 0,0,-10 };
+	viewProjection_.eye = { 0,50,-50 };
 
 	//カメラ注視点座標を設定
 	//viewProjection_.target = { 10,0,0 };
@@ -59,13 +59,6 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	for (int i = 0; i < 3; i++) {
-		viewProjections_[i].eye = { posDist(engine),posDist(engine),posDist(engine) };
-		viewProjections_[i].Initialize();
-	}
-
-	viewProjection_ = viewProjections_[cameraNum];
-
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -75,17 +68,26 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
 
-	for (int i = 0; i < 9; i++) {
+	//ワールドトランスフォームの初期化
+	//Root
+	worldTransforms_[PartId::kRoot].Initialize();
 
-	//	radian[i] = MathUtility::Radian(40 * i);
-		//ワールドトランスフォームの初期化
-	worldTransforms_[i].Initialize();
-	/*	worldTransforms_[i].scale_ = {1,1,1};
-		worldTransforms_[i].rotation_ = { 0,0,0 };
-		worldTransforms_[i].translation_ = { sinf(radian[i]) * 5,cosf(radian[i]) * 5,0};*/
-		worldTransforms_[i].MatUpdate();
+	//Head
+	worldTransforms_[PartId::kHead].Initialize();
+	worldTransforms_[PartId::kHead].parent_ = &worldTransforms_[PartId::kRoot];
+	worldTransforms_[PartId::kHead].translation_ = { 0.0f,0.0f,4.5f };
 
-	}
+	//ArmL
+	worldTransforms_[PartId::kArmL].Initialize();
+	worldTransforms_[PartId::kArmL].parent_ = &worldTransforms_[PartId::kRoot];
+	worldTransforms_[PartId::kArmL].translation_ = { 4.5f,0.0f,0.0f };
+
+	//ArmR
+	worldTransforms_[PartId::kArmR].Initialize();
+	worldTransforms_[PartId::kArmR].parent_ = &worldTransforms_[PartId::kRoot];
+	worldTransforms_[PartId::kArmR].translation_ = { -4.5f,0.0f,0.0f };
+
+
 
 
 
@@ -247,29 +249,52 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	////子の更新
-	//{
-	//	for (int i = 0; i < kNumPartId; i++) {
-	//		worldTransforms_[i].MatUpdate();
-	//	}
-	//}
+	//バイオ移動処理
+	{
+		Vector3 frontVec{ 0.0f,0.0f,1.0f };
+		Vector3 resultVec{};
+		Vector3 move{};
+		const float kMoveSpd = 0.2f;
+		const float kRotSpd = 0.05f;
 
-	//カメラ切り替え処理
-	if (input_->TriggerKey(DIK_SPACE)) {
-		cameraNum++;
-		cameraNum %= 3;
-		viewProjection_ = viewProjections_[cameraNum];
-	}
-	
-	for (int i = 0; i < 3; i++) {
-			debugText_->SetPos(50, 50 + 40*i);
-		debugText_->Printf(
-			"camera%deye:(%f,%f,%f)target:(%f,%f,%f)up:(%f,%f,%f)",i,
-			viewProjections_[i].eye.x,viewProjections_[i].eye.y, viewProjections_[i].eye.z,
-			viewProjections_[i].target.x,viewProjections_[i].target.y, viewProjections_[i].target.z,
-			viewProjections_[i].up.x,viewProjections_[i].up.y, viewProjections_[i].up.z);
+		resultVec = {
+			sinf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd,
+		0,
+			cosf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd
+		};
 
+			//W、Sキーで上下移動
+			if (input_->PushKey(DIK_W)) {
+				move = resultVec;
+			}
+			else if (input_->PushKey(DIK_S)) {
+				move = -resultVec;
+			}
+
+
+
+		//A、Dで回転
+		if (input_->PushKey(DIK_A)) {
+			worldTransforms_[PartId::kRoot].rotation_.y -= kRotSpd;
+		}
+		else 	if (input_->PushKey(DIK_D)) {
+			worldTransforms_[PartId::kRoot].rotation_.y += kRotSpd;
+		}
+
+
+			//親の座標に移動量を加算
+			worldTransforms_[PartId::kRoot].translation_ += move;
 	}
+
+	//子の更新
+	{
+		for (int i = 0; i < kNumPartId; i++) {
+			worldTransforms_[i].MatUpdate();
+		}
+	}
+
+
+
 
 }
 
@@ -301,13 +326,10 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
-		//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
-	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
 
-
-		model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
-	
-
+	for (int i = 0; i < kNumPartId; i++) {
+		model_->Draw(worldTransforms_[i], viewProjection_, texutureHandle_);
+	}
 
 
 
