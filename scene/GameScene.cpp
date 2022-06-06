@@ -27,7 +27,8 @@ void GameScene::Initialize() {
 	//回転角用の乱数範囲の指定
 	std::uniform_real_distribution<float> rotDist(0, 360);
 	//座標用の乱数範囲の指定
-	std::uniform_real_distribution<float> posDist(-10, 10);
+	std::uniform_real_distribution<float> posDist(-100, 100);
+	std::uniform_real_distribution<float> scaleDist(0.001, 2);
 
 
 	//ファイル名を指定してテクスチャを読み込む
@@ -37,7 +38,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	//カメラ視点座標を設定
-	viewProjection_.eye = { 0,50,-50 };
+	viewProjection_.eye = { 0,25,-50 };
 
 	//カメラ注視点座標を設定
 	//viewProjection_.target = { 10,0,0 };
@@ -88,7 +89,26 @@ void GameScene::Initialize() {
 	worldTransforms_[PartId::kArmR].translation_ = { -4.5f,0.0f,0.0f };
 
 
-
+	for (int i = 0; i < 100; i++) {
+	
+		obj[i].Initialize();
+		obj[i].translation_ = {
+		posDist(engine),
+		posDist(engine),
+		posDist(engine)
+		};
+		obj[i].rotation_ = {
+	rotDist(engine),
+	rotDist(engine),
+	rotDist(engine)
+		};
+		obj[i].scale_ = {
+	scaleDist(engine),
+	scaleDist(engine),
+	scaleDist(engine)
+		};
+		obj[i].MatUpdate();
+	}
 
 
 }
@@ -249,12 +269,21 @@ void GameScene::Update() {
 	//	}
 	//}
 
+	//Qキーで挙動変化
+	if (input_->TriggerKey(DIK_Q)) {
+		movePattern++;
+		movePattern %= 2;
+	}
+
+	const float kMoveSpd = 1.0f;
+
 	//バイオ移動処理
+	if (movePattern == 1)
 	{
 		Vector3 frontVec{ 0.0f,0.0f,1.0f };
 		Vector3 resultVec{};
 		Vector3 move{};
-		const float kMoveSpd = 0.2f;
+
 		const float kRotSpd = 0.05f;
 
 		resultVec = {
@@ -263,13 +292,13 @@ void GameScene::Update() {
 			cosf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd
 		};
 
-			//W、Sキーで上下移動
-			if (input_->PushKey(DIK_W)) {
-				move = resultVec;
-			}
-			else if (input_->PushKey(DIK_S)) {
-				move = -resultVec;
-			}
+		//W、Sキーで上下移動
+		if (input_->PushKey(DIK_W)) {
+			move = resultVec;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			move = -resultVec;
+		}
 
 
 
@@ -282,9 +311,67 @@ void GameScene::Update() {
 		}
 
 
-			//親の座標に移動量を加算
-			worldTransforms_[PartId::kRoot].translation_ += move;
+		//親の座標に移動量を加算
+		worldTransforms_[PartId::kRoot].translation_ += move;
 	}
+	//カメラ前後左右移動処理
+	else if (movePattern == 0) {
+		//アローキーでカメラ座標移動
+		if (input_->PushKey(DIK_UP)) {
+			viewProjection_.eye.z += kMoveSpd;
+		}
+		else if (input_->PushKey(DIK_DOWN)) {
+			viewProjection_.eye.z -= kMoveSpd;
+		}
+		
+		if (input_->PushKey(DIK_LEFT)) {
+			viewProjection_.eye.x -= kMoveSpd;
+		}
+		else if (input_->PushKey(DIK_RIGHT)) {
+			viewProjection_.eye.x += kMoveSpd;
+		}
+	
+
+		//自機座標-カメラ視点座標で正面ベクトル取得
+		//Vector3 frontVec = viewProjection_.target;
+		Vector3 frontVec = { viewProjection_.target.x - viewProjection_.eye.x,0.0f,viewProjection_.target.z - viewProjection_.eye.z };
+		//frontVec -= viewProjection_.eye;
+		//frontVec.Normalize();
+		
+
+		//Yの仮ベクトル（0,1,0）と先ほどの正面ベクトルとの外積で右ベクトルを取得
+		Vector3 rightVec = { 0,1,0 };
+		rightVec = rightVec.Cross(frontVec);
+		rightVec.Normalize();
+		frontVec.Normalize();
+		
+
+		//WASDで自機平行移動
+		Vector3 move{ 0,0,0 };
+		if (input_->PushKey(DIK_W)) {
+			move += { frontVec.x,frontVec.y,frontVec.z };
+		}
+		else if (input_->PushKey(DIK_S)) {
+			move += { -frontVec.x,-frontVec.y,-frontVec.z };
+		}
+
+		if (input_->PushKey(DIK_A)) {
+			move += {-rightVec.x,-rightVec.y,-rightVec.z};
+		}
+		else if (input_->PushKey(DIK_D)) {
+			move += { rightVec.x,rightVec.y,rightVec.z };
+		}
+
+		worldTransforms_[0].translation_ += move;
+
+		viewProjection_.UpdateMatrix();
+		debugText_->SetPos(50, 90);
+		debugText_->Printf(
+			"move:%f,%f,%f", move.x,move.y,move.z);
+
+	}
+
+	
 
 	//子の更新
 	{
@@ -294,8 +381,16 @@ void GameScene::Update() {
 	}
 
 
+	//デバッグ
+		debugText_->SetPos(50, 50);
+		debugText_->Printf(
+			"pos[0]:%f,%f,%f", worldTransforms_[0].translation_.x,worldTransforms_[0].translation_.y,worldTransforms_[0].translation_.z);
 
+		debugText_->SetPos(50, 70);
+		debugText_->Printf(
+			"eye:%f,%f,%f", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 
+	
 }
 
 void GameScene::Draw() {
@@ -331,6 +426,9 @@ void GameScene::Draw() {
 		model_->Draw(worldTransforms_[i], viewProjection_, texutureHandle_);
 	}
 
+	for (int i = 0; i < 100; i++) {
+		model_->Draw(obj[i], viewProjection_, texutureHandle_);
+	}
 
 
 	// 3Dオブジェクト描画後処理

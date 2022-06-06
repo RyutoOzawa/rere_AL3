@@ -56,11 +56,13 @@ class GameScene {
 
 	//ワールドトランスフォーム
 	WorldTransform worldTransforms_[4];
+	WorldTransform obj[100];
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
-	ViewProjection viewProjections_[3];
 	int cameraNum = 0;
+
+	int movePattern = 0;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
@@ -80,6 +82,8 @@ public:
 
 		kNumPartId
 	};
+
+
 
 	/// <summary>
 	/// ゲームシーン用
