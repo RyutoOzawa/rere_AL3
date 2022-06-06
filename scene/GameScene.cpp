@@ -80,7 +80,7 @@ void GameScene::Initialize() {
 		worldTransforms_[i].translation_ = { posDist(engine),posDist(engine),posDist(engine)};
 		if (i == 0)worldTransforms_[i].translation_.y = 0;
 		worldTransforms_[i].MatUpdate();
-
+		
 	}
 
 
@@ -250,12 +250,14 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	radian[0]+= 0.05f;
-	radian[0] = fmodf(radian[0], 360);
+	if (input_->TriggerKey(DIK_SPACE)) {
+		cameraNum++;
+		cameraNum %= 9;
+	}
 
 	//カメラ座標
-	viewProjection_.target = worldTransforms_[0].translation_;
-	viewProjection_.eye = { sinf(radian[0]) * 50,0,cosf(radian[0]) * 50 };
+	viewProjection_.target = worldTransforms_[cameraNum].translation_;
+
 		
 	
 	viewProjection_.UpdateMatrix();

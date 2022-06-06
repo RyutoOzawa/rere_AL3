@@ -60,6 +60,7 @@ class GameScene {
 	ViewProjection viewProjection_;
 
 
+
 	int cameraNum = 0;
 
 	//デバッグカメラ
