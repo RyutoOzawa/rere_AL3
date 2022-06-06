@@ -59,12 +59,7 @@ void GameScene::Initialize() {
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	for (int i = 0; i < 3; i++) {
-		viewProjections_[i].eye = { posDist(engine),posDist(engine),posDist(engine) };
-		viewProjections_[i].Initialize();
-	}
 
-	viewProjection_ = viewProjections_[cameraNum];
 
 	//デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
@@ -80,9 +75,10 @@ void GameScene::Initialize() {
 	//	radian[i] = MathUtility::Radian(40 * i);
 		//ワールドトランスフォームの初期化
 	worldTransforms_[i].Initialize();
-	/*	worldTransforms_[i].scale_ = {1,1,1};
+		worldTransforms_[i].scale_ = {1,1,1};
 		worldTransforms_[i].rotation_ = { 0,0,0 };
-		worldTransforms_[i].translation_ = { sinf(radian[i]) * 5,cosf(radian[i]) * 5,0};*/
+		worldTransforms_[i].translation_ = { posDist(engine),posDist(engine),posDist(engine)};
+		if (i == 0)worldTransforms_[i].translation_.y = 0;
 		worldTransforms_[i].MatUpdate();
 
 	}
@@ -254,23 +250,15 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	//カメラ切り替え処理
-	if (input_->TriggerKey(DIK_SPACE)) {
-		cameraNum++;
-		cameraNum %= 3;
-		viewProjection_ = viewProjections_[cameraNum];
-	}
+	radian[0]+= 0.05f;
+	radian[0] = fmodf(radian[0], 360);
+
+	//カメラ座標
+	viewProjection_.target = worldTransforms_[0].translation_;
+	viewProjection_.eye = { sinf(radian[0]) * 50,0,cosf(radian[0]) * 50 };
+		
 	
-	for (int i = 0; i < 3; i++) {
-			debugText_->SetPos(50, 50 + 40*i);
-		debugText_->Printf(
-			"camera%deye:(%f,%f,%f)target:(%f,%f,%f)up:(%f,%f,%f)",i,
-			viewProjections_[i].eye.x,viewProjections_[i].eye.y, viewProjections_[i].eye.z,
-			viewProjections_[i].target.x,viewProjections_[i].target.y, viewProjections_[i].target.z,
-			viewProjections_[i].up.x,viewProjections_[i].up.y, viewProjections_[i].up.z);
-
-	}
-
+	viewProjection_.UpdateMatrix();
 }
 
 void GameScene::Draw() {
@@ -304,9 +292,9 @@ void GameScene::Draw() {
 		//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
 	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
 
-
-		model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
-	
+	for (int i = 0; i < 9; i++) {
+		model_->Draw(worldTransforms_[i], viewProjection_, texutureHandle_);
+	}
 
 
 
