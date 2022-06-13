@@ -77,8 +77,8 @@ void GameScene::Initialize() {
 				//ワールドトランスフォームの初期化
 			worldTransforms_[i][j].Initialize();
 			worldTransforms_[i][j].scale_ = { 1,1,1 };
-			worldTransforms_[i][j].rotation_ = { 0,0,0 };
-			worldTransforms_[i][j].translation_ = { i * 4.5f - 18,j * 4.5f - 18,0 };
+			worldTransforms_[i][j].rotation_ = { rotDist(engine),rotDist(engine) ,rotDist(engine) };
+			worldTransforms_[i][j].translation_ = { posDist(engine),posDist(engine) ,posDist(engine) };
 			//if (i == 0)worldTransforms_[i][j].translation_.y = 0;
 			worldTransforms_[i][j].MatUpdate();
 
@@ -128,17 +128,17 @@ void GameScene::Update() {
 		const float kTargetSpeed = 0.2f;
 
 		//押した方向で移動ベクトルを変更
-		if (input_->PushKey(DIK_D)) {
+		if (input_->PushKey(DIK_RIGHT)) {
 			move.x += kTargetSpeed;
 		}
-		else if (input_->PushKey(DIK_A)) {
+		else if (input_->PushKey(DIK_LEFT)) {
 			move.x -= kTargetSpeed;
 		}
 
-		if (input_->PushKey(DIK_W)) {
+		if (input_->PushKey(DIK_UP)) {
 			move.y += kTargetSpeed;
 		}
-		else if (input_->PushKey(DIK_S)) {
+		else if (input_->PushKey(DIK_DOWN)) {
 			move.y -= kTargetSpeed;
 		}
 
@@ -183,21 +183,23 @@ void GameScene::Update() {
 	{
 		const float kUpFovSpeed = 0.01f;
 
-		//上キーで視野角が広がる
-		if (input_->PushKey(DIK_DOWN)) {
-			viewProjection_.fovAngleY += kUpFovSpeed;
-			viewProjection_.fovAngleY = min(viewProjection_.fovAngleY,MathUtility::PI);
-		}//上キーで視野角が広がる
-		else if (input_->PushKey(DIK_UP)) {
-			viewProjection_.fovAngleY -= kUpFovSpeed;
-			viewProjection_.fovAngleY = max(viewProjection_.fovAngleY,0.01f);
+		//スペースキーでスコープ切り替え
+		if (input_->TriggerKey(DIK_SPACE)) {
+			if (isScope) {
+				isScope = false;
+			}
+			else {
+				isScope = true;
+			}
 		}
+
+		if (isScope);
 
 		//行列の再計算
 		viewProjection_.UpdateMatrix();
 
 		debugText_->SetPos(50, 110);
-		debugText_->Printf(	"fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
+		debugText_->Printf("fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
 
 	}
 
@@ -260,8 +262,8 @@ void GameScene::Update() {
 	//}
 
 
-		
-	
+
+
 	viewProjection_.UpdateMatrix();
 }
 
