@@ -122,29 +122,36 @@ void GameScene::Update() {
 
 	//注視点移動処理
 	{
-		//Vector3 move = MathUtility::Vector3Zero();
+		Vector3 move = MathUtility::Vector3Zero();
 
-		////視点の移動速さ
-		//const float kTargetSpeed = 0.2f;
+		//視点の移動速さ
+		const float kTargetSpeed = 0.2f;
 
-		////押した方向で移動ベクトルを変更
-		//if (input_->PushKey(DIK_LEFT)) {
-		//	move.x += kTargetSpeed;
-		//}
-		//else if (input_->PushKey(DIK_RIGHT)) {
-		//	move.x -= kTargetSpeed;
-		//}
+		//押した方向で移動ベクトルを変更
+		if (input_->PushKey(DIK_D)) {
+			move.x += kTargetSpeed;
+		}
+		else if (input_->PushKey(DIK_A)) {
+			move.x -= kTargetSpeed;
+		}
 
-		////視点移動（ベクトルの加算）
-		//viewProjection_.target += move;
+		if (input_->PushKey(DIK_W)) {
+			move.y += kTargetSpeed;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			move.y -= kTargetSpeed;
+		}
 
-		////行列の再計算
-		//viewProjection_.UpdateMatrix();
+		//視点移動（ベクトルの加算）
+		viewProjection_.target += move;
 
-		////デバッグ用表示
-		//debugText_->SetPos(50, 70);
-		//debugText_->Printf(
-		//	"target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
+		//行列の再計算
+		viewProjection_.UpdateMatrix();
+
+		//デバッグ用表示
+		debugText_->SetPos(50, 70);
+		debugText_->Printf(
+			"target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
 
 	}
 

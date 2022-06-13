@@ -62,6 +62,7 @@ class GameScene {
 
 
 	int cameraNum = 0;
+	bool isScope = false;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
