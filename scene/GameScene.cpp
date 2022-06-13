@@ -71,19 +71,21 @@ void GameScene::Initialize() {
 
 
 	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
 
-	//	radian[i] = MathUtility::Radian(40 * i);
-		//ワールドトランスフォームの初期化
-	worldTransforms_[i].Initialize();
-		worldTransforms_[i].scale_ = {1,1,1};
-		worldTransforms_[i].rotation_ = { 0,0,0 };
-		worldTransforms_[i].translation_ = { posDist(engine),posDist(engine),posDist(engine)};
-		if (i == 0)worldTransforms_[i].translation_.y = 0;
-		worldTransforms_[i].MatUpdate();
-		
+			//	radian[i] = MathUtility::Radian(40 * i);
+				//ワールドトランスフォームの初期化
+			worldTransforms_[i][j].Initialize();
+			worldTransforms_[i][j].scale_ = { 1,1,1 };
+			worldTransforms_[i][j].rotation_ = { 0,0,0 };
+			worldTransforms_[i][j].translation_ = { i * 4.5f - 18,j * 4.5f - 18,0 };
+			//if (i == 0)worldTransforms_[i][j].translation_.y = 0;
+			worldTransforms_[i][j].MatUpdate();
+
+		}
 	}
 
-
+	//viewProjection_.target = worldTransforms_[4][4].translation_;
 
 }
 
@@ -172,23 +174,23 @@ void GameScene::Update() {
 
 	//FoV変更処理
 	{
-		//const float kUpFovSpeed = 0.01f;
+		const float kUpFovSpeed = 0.01f;
 
-		////上キーで視野角が広がる
-		//if (input_->PushKey(DIK_UP)) {
-		//	viewProjection_.fovAngleY += kUpFovSpeed;
-		//	viewProjection_.fovAngleY = min(viewProjection_.fovAngleY,MathUtility::PI);
-		//}//上キーで視野角が広がる
-		//else if (input_->PushKey(DIK_DOWN)) {
-		//	viewProjection_.fovAngleY -= kUpFovSpeed;
-		//	viewProjection_.fovAngleY = max(viewProjection_.fovAngleY,0.01f);
-		//}
+		//上キーで視野角が広がる
+		if (input_->PushKey(DIK_DOWN)) {
+			viewProjection_.fovAngleY += kUpFovSpeed;
+			viewProjection_.fovAngleY = min(viewProjection_.fovAngleY,MathUtility::PI);
+		}//上キーで視野角が広がる
+		else if (input_->PushKey(DIK_UP)) {
+			viewProjection_.fovAngleY -= kUpFovSpeed;
+			viewProjection_.fovAngleY = max(viewProjection_.fovAngleY,0.01f);
+		}
 
-		////行列の再計算
-		//viewProjection_.UpdateMatrix();
+		//行列の再計算
+		viewProjection_.UpdateMatrix();
 
-		//debugText_->SetPos(50, 110);
-		//debugText_->Printf(	"fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
+		debugText_->SetPos(50, 110);
+		debugText_->Printf(	"fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
 
 	}
 
@@ -250,44 +252,6 @@ void GameScene::Update() {
 	//	}
 	//}
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		cameraNum++;
-		cameraNum %= 9;
-	}
-	float cameraSpd = 0.5f;
-
-	//カメラ座標
-	//viewProjection_.target = worldTransforms_[cameraNum].translation_;
-	//注視点座標がオブジェクト座標よりおおきいなら注視点座標を減らす
-	if (viewProjection_.target.x > worldTransforms_[cameraNum].translation_.x + cameraSpd) {
-		viewProjection_.target.x -= cameraSpd;
-	}//小さいなら増加
-	else if (viewProjection_.target.x < worldTransforms_[cameraNum].translation_.x - cameraSpd) {
-		viewProjection_.target.x += cameraSpd;
-	}
-	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
-		viewProjection_.target.x = worldTransforms_[cameraNum].translation_.x;
-	}
-
-	if (viewProjection_.target.y > worldTransforms_[cameraNum].translation_.y + cameraSpd) {
-		viewProjection_.target.y -= cameraSpd;
-	}//小さいなら増加
-	else if (viewProjection_.target.y < worldTransforms_[cameraNum].translation_.y - cameraSpd) {
-		viewProjection_.target.y+= cameraSpd;
-	}
-	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
-		viewProjection_.target.y = worldTransforms_[cameraNum].translation_.y;
-	}
-
-	if (viewProjection_.target.z> worldTransforms_[cameraNum].translation_.z + cameraSpd) {
-		viewProjection_.target.z -= cameraSpd;
-	}//小さいなら増加
-	else if (viewProjection_.target.z < worldTransforms_[cameraNum].translation_.z- cameraSpd) {
-		viewProjection_.target.z += cameraSpd;
-	}
-	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
-		viewProjection_.target.z = worldTransforms_[cameraNum].translation_.z;
-	}
 
 		
 	
@@ -326,7 +290,9 @@ void GameScene::Draw() {
 	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
 
 	for (int i = 0; i < 9; i++) {
-		model_->Draw(worldTransforms_[i], viewProjection_, texutureHandle_);
+		for (int j = 0; j < 9; j++) {
+			model_->Draw(worldTransforms_[i][j], viewProjection_, texutureHandle_);
+		}
 	}
 
 
