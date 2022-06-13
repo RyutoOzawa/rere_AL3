@@ -11,6 +11,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
+	delete sprite_;
 }
 
 void GameScene::Initialize() {
@@ -32,9 +33,15 @@ void GameScene::Initialize() {
 
 	//ファイル名を指定してテクスチャを読み込む
 	texutureHandle_ = TextureManager::Load("mario.jpg");
+	reticleTexture = TextureManager::Load("reticle.png");
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+
+	//スプライトの生成
+	sprite_ = Sprite::Create(reticleTexture, { 640 -64,360-64});
+
+	//WinApp::
 
 	//カメラ視点座標を設定
 	//viewProjection_.eye = { 0,0,-10 };
@@ -193,7 +200,12 @@ void GameScene::Update() {
 			}
 		}
 
-		if (isScope);
+		if (!isScope) {
+			viewProjection_.fovAngleY = MathUtility::Radian(40);
+		}
+		else {
+			viewProjection_.fovAngleY =  MathUtility::Radian(20);
+		}
 
 		//行列の再計算
 		viewProjection_.UpdateMatrix();
@@ -280,6 +292,8 @@ void GameScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
+
+
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -318,6 +332,10 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	if (isScope) {
+		sprite_->Draw();
+	}
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

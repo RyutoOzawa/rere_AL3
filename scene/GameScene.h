@@ -50,9 +50,13 @@ class GameScene {
 
 	//テクスチャハンドル
 	uint32_t texutureHandle_ = 0;
+	uint32_t reticleTexture = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
+
+	//スプライト
+	Sprite* sprite_ = nullptr;
 
 	//ワールドトランスフォーム
 	WorldTransform worldTransforms_[9][9];
