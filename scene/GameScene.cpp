@@ -287,9 +287,9 @@ void GameScene::Update() {
 		const float kRotSpd = 0.05f;
 
 		resultVec = {
-			sinf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd,
+			sinf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd * 10.0f,
 		0,
-			cosf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd
+			cosf(worldTransforms_[PartId::kRoot].rotation_.y) * kRotSpd * 10.0f
 		};
 
 		//W、Sキーで上下移動
