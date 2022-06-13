@@ -254,9 +254,40 @@ void GameScene::Update() {
 		cameraNum++;
 		cameraNum %= 9;
 	}
+	float cameraSpd = 0.5f;
 
 	//カメラ座標
-	viewProjection_.target = worldTransforms_[cameraNum].translation_;
+	//viewProjection_.target = worldTransforms_[cameraNum].translation_;
+	//注視点座標がオブジェクト座標よりおおきいなら注視点座標を減らす
+	if (viewProjection_.target.x > worldTransforms_[cameraNum].translation_.x + cameraSpd) {
+		viewProjection_.target.x -= cameraSpd;
+	}//小さいなら増加
+	else if (viewProjection_.target.x < worldTransforms_[cameraNum].translation_.x - cameraSpd) {
+		viewProjection_.target.x += cameraSpd;
+	}
+	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
+		viewProjection_.target.x = worldTransforms_[cameraNum].translation_.x;
+	}
+
+	if (viewProjection_.target.y > worldTransforms_[cameraNum].translation_.y + cameraSpd) {
+		viewProjection_.target.y -= cameraSpd;
+	}//小さいなら増加
+	else if (viewProjection_.target.y < worldTransforms_[cameraNum].translation_.y - cameraSpd) {
+		viewProjection_.target.y+= cameraSpd;
+	}
+	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
+		viewProjection_.target.y = worldTransforms_[cameraNum].translation_.y;
+	}
+
+	if (viewProjection_.target.z> worldTransforms_[cameraNum].translation_.z + cameraSpd) {
+		viewProjection_.target.z -= cameraSpd;
+	}//小さいなら増加
+	else if (viewProjection_.target.z < worldTransforms_[cameraNum].translation_.z- cameraSpd) {
+		viewProjection_.target.z += cameraSpd;
+	}
+	else {//注視点座標がオブジェクト座標＋カメラの移動速度の範囲内なら座標をセット
+		viewProjection_.target.z = worldTransforms_[cameraNum].translation_.z;
+	}
 
 		
 	
