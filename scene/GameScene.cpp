@@ -189,23 +189,29 @@ void GameScene::Update() {
 	//FoV変更処理
 	{
 		const float kUpFovSpeed = 0.01f;
+		const float fovMax = MathUtility::Radian(40);
+		const float fovMin = MathUtility::Radian(20);
 
 		//スペースキーでスコープ切り替え
-		if (input_->TriggerKey(DIK_SPACE)) {
-			if (isScope) {
-				isScope = false;
-			}
-			else {
-				isScope = true;
-			}
-		}
-
-		if (!isScope) {
-			viewProjection_.fovAngleY = MathUtility::Radian(40);
+		if (input_->PushKey(DIK_SPACE)) {
+			isScope = true;
 		}
 		else {
-			viewProjection_.fovAngleY =  MathUtility::Radian(20);
+			isScope = false;
 		}
+
+		//スコープフラグがあるならfovを下げる
+		if (!isScope) {
+			if (viewProjection_.fovAngleY < fovMax) {
+				viewProjection_.fovAngleY += MathUtility::Radian(1);
+			}
+		}
+		else {
+			if (viewProjection_.fovAngleY > fovMin) {
+				viewProjection_.fovAngleY -= MathUtility::Radian(1);
+			}
+		}
+	
 
 		//行列の再計算
 		viewProjection_.UpdateMatrix();
