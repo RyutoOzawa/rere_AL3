@@ -90,7 +90,7 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 	else {
-		viewProjection_.UpdateMatrix();ada
+		viewProjection_.UpdateMatrix();
 		viewProjection_.TransferMatrix();
 	}
 

@@ -21,6 +21,9 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update()
 {
+	//旋回処理
+	Rotate();
+
 	//キャラクター移動
 	Vector3 move = { 0,0,0 };
 	const float kMoveSpd = 0.5f;
@@ -51,6 +54,14 @@ void Player::Update()
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
+	//攻撃処理
+	Attack();
+
+	//弾更新
+	if (bullet_) {
+		bullet_->Update();
+	}
+
 	//行列の更新
 	worldTransform_.MatUpdate();
 
@@ -63,4 +74,31 @@ void Player::Update()
 void Player::Draw(ViewProjection viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+
+	//弾描画
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
+}
+
+void Player::Rotate()
+{
+	Vector3 rotate{ 0,0,0 };
+	if (input_->PushKey(DIK_U)) {
+		rotate.y = MathUtility::Radian(1.0f);
+	}
+	else if (input_->PushKey(DIK_I)) {
+		rotate.y = -MathUtility::Radian(1.0f);
+	}
+	worldTransform_.rotation_ += rotate;
+}
+
+void Player::Attack()
+{
+	if (input_->TriggerKey(DIK_SPACE)) {
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+
+		bullet_ = newBullet;
+	}
 }
