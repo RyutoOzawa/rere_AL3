@@ -26,6 +26,8 @@ class DebugCamera {
 	/// <returns>ビュープロジェクション</returns>
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 
+
+
   private:
 	// 入力クラスのポインタ
 	Input* input_;
