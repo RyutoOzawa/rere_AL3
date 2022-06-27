@@ -278,6 +278,20 @@ void GameScene::Update() {
 		}
 	}
 
+	//全身を回転
+	if (input_->PushKey(DIK_A)) {
+		worldTransforms_[PartId::kRoot].rotation_.y += 0.05f;
+	}
+	else if (input_->PushKey(DIK_D)) {
+		worldTransforms_[PartId::kRoot].rotation_.y -= 0.05f;
+	}
+
+	//両手両足を回転
+	worldTransforms_[PartId::kArmL].rotation_.x -= 0.1f;
+	worldTransforms_[PartId::kArmR].rotation_.x += 0.1f;
+	worldTransforms_[PartId::kLegL].rotation_.x += 0.1f;
+	worldTransforms_[PartId::kLegR].rotation_.x -= 0.1f;
+
 	//子の更新
 	{
 		for (int i = 0; i < kNumPartId; i++) {
