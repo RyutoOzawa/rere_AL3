@@ -80,6 +80,10 @@ public:
 		kHip,	//尻
 		kLegL,	//左足
 		kLegR,	//右足
+		kArmL2,	//左腕2
+		kArmR2,	//右腕2
+		kLegL2,	//左足2
+		kLegR2,	//右足2
 
 		kNumPartId
 	};
