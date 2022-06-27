@@ -21,8 +21,19 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update()
 {
+	//デバッグ用
+	if (input_->PushKey(DIK_J)) {
+		worldTransform_.scale_.x += 0.05f;
+	}
+	else 	if (input_->PushKey(DIK_K)) {
+		worldTransform_.scale_.x -= 0.05f;
+	}
+
+
 	//旋回処理
 	Rotate();
+
+	
 
 	//キャラクター移動
 	Vector3 move = { 0,0,0 };
@@ -96,9 +107,17 @@ void Player::Rotate()
 void Player::Attack()
 {
 	if (input_->TriggerKey(DIK_SPACE)) {
+		//弾の速度
+		const float kBulletSpd = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpd);
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		//velocity. = 
+
+
 		//弾の生成と初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
 
 		bullets_.push_back(std::move(newBullet));
 	}
