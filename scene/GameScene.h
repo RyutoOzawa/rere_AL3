@@ -67,6 +67,9 @@ class GameScene {
 
 	//四肢回転制御用
 	bool isTurn = false;
+	//ダッシュ制御
+	bool isDush = false;
+	float spdY = 0;
 
 public:
 	//パーツID

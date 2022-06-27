@@ -310,19 +310,39 @@ void GameScene::Update() {
 		worldTransforms_[PartId::kRoot].rotation_.y -= 0.05f;
 	}
 
+	//シフトキーでダッシュ
+	if (input_->PushKey(DIK_LSHIFT)) {
+		isDush = true;
+	}
+	else {
+		isDush = false;
+	}
+
+
 	if (input_->PushKey(DIK_W)) {
 		//両手両足を回転
-		if (!isTurn) {
-			worldTransforms_[PartId::kArmL].rotation_.x -= 0.1f;
-				worldTransforms_[PartId::kArmR].rotation_.x += 0.1f;
-				worldTransforms_[PartId::kLegL].rotation_.x += 0.1f;
-				worldTransforms_[PartId::kLegR].rotation_.x -= 0.1f;
+		const float dushSpd = 0.2f;
+		const float walkSpd = 0.1f;
+		float rotaSpd = 0;
+
+		if (isDush) {
+			rotaSpd = dushSpd;
 		}
 		else {
-			worldTransforms_[PartId::kArmL].rotation_.x += 0.1f;
-				worldTransforms_[PartId::kArmR].rotation_.x -= 0.1f;
-				worldTransforms_[PartId::kLegL].rotation_.x -= 0.1f;
-			worldTransforms_[PartId::kLegR].rotation_.x += 0.1f;
+			rotaSpd = walkSpd;
+		}
+
+		if (!isTurn) {
+			worldTransforms_[PartId::kArmL].rotation_.x -= rotaSpd;
+			worldTransforms_[PartId::kArmR].rotation_.x += rotaSpd;
+			worldTransforms_[PartId::kLegL].rotation_.x += rotaSpd;
+			worldTransforms_[PartId::kLegR].rotation_.x -= rotaSpd;
+		}
+		else {
+			worldTransforms_[PartId::kArmL].rotation_.x += rotaSpd;
+			worldTransforms_[PartId::kArmR].rotation_.x -= rotaSpd;
+			worldTransforms_[PartId::kLegL].rotation_.x -= rotaSpd;
+			worldTransforms_[PartId::kLegR].rotation_.x += rotaSpd;
 		}
 
 		const float turnMax = 1.5f;
@@ -344,6 +364,22 @@ void GameScene::Update() {
 			worldTransforms_[PartId::kLegR].rotation_.x = turnMax;
 		}
 	}
+
+	//スペースキーでジャンプ
+	if (input_->TriggerKey(DIK_SPACE)) {
+		spdY = 1.0f;
+		//worldTransforms_[PartId::kRoot].translation_.y = 5;
+	}
+
+	if (worldTransforms_[PartId::kRoot].translation_.y > 0) {
+		spdY -= 0.1f;
+		
+	}
+	else {
+		worldTransforms_[PartId::kRoot].translation_.y = 0;
+		//spdY = 0;
+	}
+	worldTransforms_[PartId::kRoot].translation_.y += spdY;
 
 	//子の更新
 	{
