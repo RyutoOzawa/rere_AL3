@@ -51,12 +51,14 @@ class GameScene {
 	//テクスチャハンドル
 	uint32_t texutureHandle_ = 0;
 	uint32_t reticleTexture = 0;
+	uint32_t scopeTexture = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
 
 	//スプライト
 	Sprite* sprite_ = nullptr;
+	Sprite* scopeGraph_ = nullptr;
 
 	//ワールドトランスフォーム
 	WorldTransform worldTransforms_[9][9];
@@ -67,6 +69,7 @@ class GameScene {
 
 	int cameraNum = 0;
 	bool isScope = false;
+	bool isZoom = false;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;

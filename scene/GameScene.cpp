@@ -12,6 +12,7 @@ GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	delete sprite_;
+	delete scopeGraph_;
 }
 
 void GameScene::Initialize() {
@@ -34,12 +35,14 @@ void GameScene::Initialize() {
 	//ファイル名を指定してテクスチャを読み込む
 	texutureHandle_ = TextureManager::Load("mario.jpg");
 	reticleTexture = TextureManager::Load("reticle.png");
+	scopeTexture = TextureManager::Load("scope.png");
 
 	//3Dモデルの生成
 	model_ = Model::Create();
 
 	//スプライトの生成
-	sprite_ = Sprite::Create(reticleTexture, { 640 -64,360-64});
+	sprite_ = Sprite::Create(reticleTexture, { 640 - 64,360 - 64 });
+	scopeGraph_ = Sprite::Create(scopeTexture, { 0, 0 });
 
 	//WinApp::
 
@@ -189,165 +192,187 @@ void GameScene::Update() {
 	//FoV変更処理
 	{
 		const float kUpFovSpeed = 0.01f;
-		const float fovMax = MathUtility::Radian(40);
-		const float fovMin = MathUtility::Radian(20);
+		const float scopeMax = MathUtility::Radian(33);
+		const float scopeMin = scopeMax / 2.0f;
 
 		//スペースキーでスコープ切り替え
-		if (input_->PushKey(DIK_SPACE)) {
-			isScope = true;
-		}
-		else {
-			isScope = false;
-		}
+		if (input_->TriggerKey(DIK_SPACE)) {
+			if (!isScope) {
+				isScope = true;
+				viewProjection_.fovAngleY = scopeMax;
+			}
 
-		//スコープフラグがあるならfovを下げる
-		if (!isScope) {
-			if (viewProjection_.fovAngleY < fovMax) {
-				viewProjection_.fovAngleY += MathUtility::Radian(1);
+			else {
+				isScope = false;
 			}
 		}
-		else {
-			if (viewProjection_.fovAngleY > fovMin) {
-				viewProjection_.fovAngleY -= MathUtility::Radian(1);
+
+				//スコープフラグがあるならfovを下げる
+				if (!isScope) {
+					viewProjection_.fovAngleY = MathUtility::Radian(90);
+
+				}
+				else {
+					if (input_->TriggerKey(DIK_W)) {
+						isZoom = true;
+					}
+					else if (input_->TriggerKey(DIK_S)) {
+						isZoom = false;
+					}
+
+					if (!isZoom) {
+						if (viewProjection_.fovAngleY < scopeMax) {
+							viewProjection_.fovAngleY += MathUtility::Radian(1);
+						}
+					}
+					else {
+						if (viewProjection_.fovAngleY > scopeMin) {
+							viewProjection_.fovAngleY -= MathUtility::Radian(1);
+						}
+					}
+				}
+
+
+
+				//行列の再計算
+				viewProjection_.UpdateMatrix();
+
+				debugText_->SetPos(50, 110);
+				debugText_->Printf("fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
+				
+				if (isScope) {
+					debugText_->SetPos(1100, 110);
+					if(!isZoom)debugText_->Printf("x4");
+					else debugText_->Printf("x8");
+				}
+
 			}
+
+			//クリップ距離変更処理
+			{
+				////上下キーでニアクリップ距離を増減
+				//if (input_->PushKey(DIK_UP)) {
+				//	viewProjection_.nearZ += 0.1f;
+				//}else if (input_->PushKey(DIK_DOWN)) {
+				//	viewProjection_.nearZ -= 0.1f;
+				//}
+
+				////行列の再計算
+				//viewProjection_.UpdateMatrix();
+
+				//debugText_->SetPos(50, 130);
+				//debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
+
+			}
+
+			////キャラクター移動処理
+			//{
+			//	//キャラクターの移動ベクトル
+			//	Vector3 move = { 0,0,0 };
+			//	move.x = 0.1f * (input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
+
+			//	worldTransforms_[PartId::kRoot].translation_ += move;
+			//	
+			//	//worldTransforms_[PartId::kRoot].MatUpdate();
+
+			//	debugText_->SetPos(50, 130);
+			//	debugText_->Printf(
+			//		"pos[0]:%f,%f,%f", worldTransforms_[0].translation_.x,worldTransforms_[0].translation_.y,worldTransforms_[0].translation_.z);
+			//}
+
+			////上半身回転処理
+			//{
+			//	if (input_->PushKey(DIK_U)) {
+			//		worldTransforms_[PartId::kChest].rotation_.y -= 0.05f;
+			//	}else if (input_->PushKey(DIK_I)) {
+			//		worldTransforms_[PartId::kChest].rotation_.y += 0.05f;
+			//	}
+			//}
+
+			////下半身回転処理
+			//{
+			//	if (input_->PushKey(DIK_J)) {
+			//		worldTransforms_[PartId::kHip].rotation_.y -= 0.05f;
+			//	}
+			//	else if (input_->PushKey(DIK_K)) {
+			//		worldTransforms_[PartId::kHip].rotation_.y += 0.05f;
+			//	}
+			//}
+
+			////子の更新
+			//{
+			//	for (int i = 0; i < kNumPartId; i++) {
+			//		worldTransforms_[i].MatUpdate();
+			//	}
+			//}
+
+			viewProjection_.UpdateMatrix();
 		}
-	
 
-		//行列の再計算
-		viewProjection_.UpdateMatrix();
+		void GameScene::Draw() {
 
-		debugText_->SetPos(50, 110);
-		debugText_->Printf("fovAngleY(Degree):%f", viewProjection_.fovAngleY * 180 / MathUtility::PI);
-
-	}
-
-	//クリップ距離変更処理
-	{
-		////上下キーでニアクリップ距離を増減
-		//if (input_->PushKey(DIK_UP)) {
-		//	viewProjection_.nearZ += 0.1f;
-		//}else if (input_->PushKey(DIK_DOWN)) {
-		//	viewProjection_.nearZ -= 0.1f;
-		//}
-
-		////行列の再計算
-		//viewProjection_.UpdateMatrix();
-
-		//debugText_->SetPos(50, 130);
-		//debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
-
-	}
-
-	////キャラクター移動処理
-	//{
-	//	//キャラクターの移動ベクトル
-	//	Vector3 move = { 0,0,0 };
-	//	move.x = 0.1f * (input_->PushKey(DIK_RIGHT) - input_->PushKey(DIK_LEFT));
-
-	//	worldTransforms_[PartId::kRoot].translation_ += move;
-	//	
-	//	//worldTransforms_[PartId::kRoot].MatUpdate();
-
-	//	debugText_->SetPos(50, 130);
-	//	debugText_->Printf(
-	//		"pos[0]:%f,%f,%f", worldTransforms_[0].translation_.x,worldTransforms_[0].translation_.y,worldTransforms_[0].translation_.z);
-	//}
-
-	////上半身回転処理
-	//{
-	//	if (input_->PushKey(DIK_U)) {
-	//		worldTransforms_[PartId::kChest].rotation_.y -= 0.05f;
-	//	}else if (input_->PushKey(DIK_I)) {
-	//		worldTransforms_[PartId::kChest].rotation_.y += 0.05f;
-	//	}
-	//}
-
-	////下半身回転処理
-	//{
-	//	if (input_->PushKey(DIK_J)) {
-	//		worldTransforms_[PartId::kHip].rotation_.y -= 0.05f;
-	//	}
-	//	else if (input_->PushKey(DIK_K)) {
-	//		worldTransforms_[PartId::kHip].rotation_.y += 0.05f;
-	//	}
-	//}
-
-	////子の更新
-	//{
-	//	for (int i = 0; i < kNumPartId; i++) {
-	//		worldTransforms_[i].MatUpdate();
-	//	}
-	//}
-
-
-
-
-	viewProjection_.UpdateMatrix();
-}
-
-void GameScene::Draw() {
-
-	// コマンドリストの取得
-	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
+			// コマンドリストの取得
+			ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
 #pragma region 背景スプライト描画
-	// 背景スプライト描画前処理
-	Sprite::PreDraw(commandList);
+			// 背景スプライト描画前処理
+			Sprite::PreDraw(commandList);
 
-	/// <summary>
-	/// ここに背景スプライトの描画処理を追加できる
-	/// </summary>
+			/// <summary>
+			/// ここに背景スプライトの描画処理を追加できる
+			/// </summary>
 
 
 
-	// スプライト描画後処理
-	Sprite::PostDraw();
-	// 深度バッファクリア
-	dxCommon_->ClearDepthBuffer();
+			// スプライト描画後処理
+			Sprite::PostDraw();
+			// 深度バッファクリア
+			dxCommon_->ClearDepthBuffer();
 #pragma endregion
 
 #pragma region 3Dオブジェクト描画
-	// 3Dオブジェクト描画前処理
-	Model::PreDraw(commandList);
+			// 3Dオブジェクト描画前処理
+			Model::PreDraw(commandList);
 
-	/// <summary>
-	/// ここに3Dオブジェクトの描画処理を追加できる
-	/// </summary>
+			/// <summary>
+			/// ここに3Dオブジェクトの描画処理を追加できる
+			/// </summary>
 
-	//3Dモデル描画
-		//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
-	//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
+			//3Dモデル描画
+				//model_->Draw(worldTransforms_[0], viewProjection_, texutureHandle_);
+			//	model_->Draw(worldTransforms_[1], viewProjection_, texutureHandle_);
 
-	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-			model_->Draw(worldTransforms_[i][j], viewProjection_, texutureHandle_);
-		}
-	}
-
-
+			for (int i = 0; i < 9; i++) {
+				for (int j = 0; j < 9; j++) {
+					model_->Draw(worldTransforms_[i][j], viewProjection_, texutureHandle_);
+				}
+			}
 
 
-	// 3Dオブジェクト描画後処理
-	Model::PostDraw();
+
+
+			// 3Dオブジェクト描画後処理
+			Model::PostDraw();
 #pragma endregion
 
 #pragma region 前景スプライト描画
-	// 前景スプライト描画前処理
-	Sprite::PreDraw(commandList);
+			// 前景スプライト描画前処理
+			Sprite::PreDraw(commandList);
 
-	/// <summary>
-	/// ここに前景スプライトの描画処理を追加できる
-	/// </summary>
+			/// <summary>
+			/// ここに前景スプライトの描画処理を追加できる
+			/// </summary>
 
-	if (isScope) {
-		sprite_->Draw();
-	}
+			if (isScope) {
+				sprite_->Draw();
+				scopeGraph_->Draw();
+			}
 
-	// デバッグテキストの描画
-	debugText_->DrawAll(commandList);
-	//
-	// スプライト描画後処理
-	Sprite::PostDraw();
+			// デバッグテキストの描画
+			debugText_->DrawAll(commandList);
+			//
+			// スプライト描画後処理
+			Sprite::PostDraw();
 
 #pragma endregion
-}
+		}
