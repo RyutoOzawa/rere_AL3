@@ -256,7 +256,18 @@ void GameScene::Update() {
 
 		debugText_->SetPos(50, 130);
 		debugText_->Printf(
-			"pos[0]:%f,%f,%f", worldTransforms_[0].translation_.x,worldTransforms_[0].translation_.y,worldTransforms_[0].translation_.z);
+			"rotation[kLegL]:%f,%f,%f", worldTransforms_[PartId::kLegL].rotation_.x, worldTransforms_[PartId::kLegL].rotation_.y, worldTransforms_[PartId::kLegL].rotation_.z);
+	
+		debugText_->SetPos(50, 150);
+		debugText_->Printf(
+			"rotation[kLegR]:%f,%f,%f", worldTransforms_[PartId::kLegR].rotation_.x, worldTransforms_[PartId::kLegR].rotation_.y, worldTransforms_[PartId::kLegR].rotation_.z);
+		debugText_->SetPos(50, 170);
+		debugText_->Printf(
+			"rotation[kArmL]:%f,%f,%f", worldTransforms_[PartId::kArmL].rotation_.x, worldTransforms_[PartId::kArmL].rotation_.y, worldTransforms_[PartId::kArmL].rotation_.z);
+		debugText_->SetPos(50, 190);
+		debugText_->Printf(
+			"rotation[kArmR]:%f,%f,%f", worldTransforms_[PartId::kArmR].rotation_.x, worldTransforms_[PartId::kArmR].rotation_.y, worldTransforms_[PartId::kArmR].rotation_.z);
+
 	}
 
 	//上半身回転処理
@@ -287,10 +298,34 @@ void GameScene::Update() {
 	}
 
 	//両手両足を回転
-	worldTransforms_[PartId::kArmL].rotation_.x -= 0.1f;
-	worldTransforms_[PartId::kArmR].rotation_.x += 0.1f;
-	worldTransforms_[PartId::kLegL].rotation_.x += 0.1f;
-	worldTransforms_[PartId::kLegR].rotation_.x -= 0.1f;
+	if (!isTurn) {
+		worldTransforms_[PartId::kArmL].rotation_.x -= 0.1f;
+		worldTransforms_[PartId::kArmR].rotation_.x += 0.1f;
+		worldTransforms_[PartId::kLegL].rotation_.x += 0.1f;
+		worldTransforms_[PartId::kLegR].rotation_.x -= 0.1f;
+	}
+	else {
+		worldTransforms_[PartId::kArmL].rotation_.x += 0.1f;
+		worldTransforms_[PartId::kArmR].rotation_.x -= 0.1f;
+		worldTransforms_[PartId::kLegL].rotation_.x -= 0.1f;
+		worldTransforms_[PartId::kLegR].rotation_.x += 0.1f;
+	}
+
+	if (worldTransforms_[PartId::kArmL].rotation_.x < -3.0f) {
+		isTurn = true;
+		worldTransforms_[PartId::kArmL].rotation_.x = -3.0f;
+		worldTransforms_[PartId::kArmR].rotation_.x = 3.0f;
+		worldTransforms_[PartId::kLegL].rotation_.x = 3.0f;
+		worldTransforms_[PartId::kLegR].rotation_.x = -3.0f;
+		
+	}
+	else if (worldTransforms_[PartId::kArmL].rotation_.x > 0) {
+		isTurn = false;
+		worldTransforms_[PartId::kArmL].rotation_.x = 0;
+		worldTransforms_[PartId::kArmR].rotation_.x = 0;
+		worldTransforms_[PartId::kLegL].rotation_.x = 0;
+		worldTransforms_[PartId::kLegR].rotation_.x = 0;
+	}
 
 	//子の更新
 	{

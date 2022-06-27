@@ -65,6 +65,8 @@ class GameScene {
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
 
+	//四肢回転制御用
+	bool isTurn = false;
 
 public:
 	//パーツID
