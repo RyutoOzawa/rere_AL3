@@ -11,6 +11,7 @@
 #include "WorldTransform.h"
 #include"DebugCamera.h"
 #include"Player.h"
+#include"Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -51,6 +52,7 @@ class GameScene {
 
 	//テクスチャハンドル
 	uint32_t texutureHandle_ = 0;
+	uint32_t enemyTexutureHandle_ = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
@@ -71,7 +73,9 @@ class GameScene {
 public:
 
 	//自キャラ
-	Player* player_ = nullptr;
+	std::unique_ptr<Player> player_;
+
+	std::unique_ptr<Enemy> enemy_;
 
 	/// <summary>
 	/// ゲームシーン用

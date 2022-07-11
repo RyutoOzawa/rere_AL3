@@ -5,13 +5,13 @@
 #include"PrimitiveDrawer.h"
 #include"MathUtility.h"
 #include<random>
+#include"Enemy.h"
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
-	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -33,14 +33,24 @@ void GameScene::Initialize() {
 
 	//ファイル名を指定してテクスチャを読み込む
 	texutureHandle_ = TextureManager::Load("mario.jpg");
+	enemyTexutureHandle_ = TextureManager::Load("orangeBlock.png");
 
 	//3Dモデルの生成
 	model_ = Model::Create();
 
 	//自キャラの生成
-	player_ = new Player();
-	//自キャラの初期化
-	player_->Initialize(model_,texutureHandle_);
+	Player* newPlayer =new Player();
+	newPlayer->Initialize(model_, texutureHandle_);
+	//生成したプレイヤーをしまう
+	player_.reset(newPlayer);
+
+	Vector3 enemyPos{ 0,0,100.0f };
+
+	//敵の生成
+	Enemy* newEnemy = new Enemy();
+	newEnemy->Initialize(model_, enemyTexutureHandle_, enemyPos);
+	//生成した敵をしまう
+	enemy_.reset(newEnemy);
 
 	//カメラ視点座標を設定
 	//viewProjection_.eye = { 0,0,-10 };
@@ -73,6 +83,7 @@ void GameScene::Initialize() {
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
+
 }
 
 void GameScene::Update() {
@@ -98,7 +109,10 @@ void GameScene::Update() {
 	//自キャラの更新
 	player_->Update();
 
-	
+	if (enemy_) {
+		enemy_->Update();
+	}
+
 }
 
 void GameScene::Draw() {
@@ -132,6 +146,11 @@ void GameScene::Draw() {
 	
 		//自キャラ描画
 		player_->Draw(viewProjection_);
+
+		//敵描画
+		if (enemy_) {
+			enemy_->Draw(viewProjection_);
+		}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
