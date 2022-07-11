@@ -9,6 +9,8 @@ const float PI = 3.141592654f;
 
 float Radian(float radian);
 
+Vector3 Vector3MultiTransform(const Vector3& v, const Matrix4& m);
+
 // 零ベクトルを返す
 const Vector3 Vector3Zero();
 // 2ベクトルが一致しているか調べる
@@ -55,6 +57,7 @@ Matrix4 Matrix4Perspective(float fovAngleY, float aspectRatio, float nearZ, floa
 
 // 座標変換（w除算なし）
 Vector3 Vector3Transform(const Vector3& v, const Matrix4& m);
+
 // 座標変換（w除算あり）
 Vector3 Vector3TransformCoord(const Vector3& v, const Matrix4& m);
 // ベクトル変換

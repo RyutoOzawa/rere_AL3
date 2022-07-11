@@ -23,6 +23,8 @@ public:
 	/// </summary>
 	void Draw(const ViewProjection& viewProjection);
 
+	bool IsDead() const { return isDead_; };
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -30,6 +32,14 @@ private:
 
 	//速度　
 	Vector3 velocity_;
+
+	//寿命
+	static const int32_t kLifeTime = 60 * 5;
+
+	//デスタイマー
+	int32_t deathTimer_ = kLifeTime;
+	//ですフラグ
+	bool isDead_ = false;
 
 };
 

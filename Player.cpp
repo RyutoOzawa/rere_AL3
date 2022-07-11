@@ -1,6 +1,6 @@
 #include "Player.h"
 #include<cassert>
-
+using namespace MathUtility;
 
 void Player::Initialize(Model* model, uint32_t textureHandle)
 {
@@ -29,11 +29,14 @@ void Player::Update()
 		worldTransform_.scale_.x -= 0.05f;
 	}
 
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {
+		return bullet->IsDead();
+		});
+
 
 	//旋回処理
 	Rotate();
-
-	
 
 	//キャラクター移動
 	Vector3 move = { 0,0,0 };
@@ -112,8 +115,7 @@ void Player::Attack()
 		Vector3 velocity(0, 0, kBulletSpd);
 
 		//速度ベクトルを自機の向きに合わせて回転させる
-		//velocity. = 
-
+		velocity = Vector3MultiTransform(velocity, worldTransform_.matWorld_);
 
 		//弾の生成と初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
