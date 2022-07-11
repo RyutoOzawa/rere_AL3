@@ -16,7 +16,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 pos)
 	//‰ŠúÀ•W‚ÉˆÚ“®
 	worldTransform_.translation_ = pos;
 
-	velocity_ = { 0,0,-1 };
+	velocity_ = { 0,0,0 };
 }
 
 void Enemy::Update()

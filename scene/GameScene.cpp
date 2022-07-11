@@ -44,11 +44,11 @@ void GameScene::Initialize() {
 	//生成したプレイヤーをしまう
 	player_.reset(newPlayer);
 
-	Vector3 enemyPos{ 0,0,100.0f };
+	Vector3 enemyPos{ 0,0,10.0f };
 
 	//敵の生成
 	Enemy* newEnemy = new Enemy();
-	newEnemy->Initialize(model_, enemyTexutureHandle_, enemyPos);
+	newEnemy->Initialize(model_, texutureHandle_, enemyPos);
 	//生成した敵をしまう
 	enemy_.reset(newEnemy);
 

@@ -17,6 +17,8 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 	//ƒ[ƒ‹ƒh•ÏŠ·‚Ì‰Šú‰»
 	worldTransform_.Initialize();
+
+	worldTransform_.scale_.z = 20.0f;
 }
 
 void Player::Update()
@@ -50,9 +52,16 @@ void Player::Update()
 	}
 
 	if (input_->PushKey(DIK_W)) {
-		move.y = kMoveSpd;
+		move.z = kMoveSpd;
 	}
 	else if (input_->PushKey(DIK_S)) {
+		move.z = -kMoveSpd;
+	}
+
+	if (input_->PushKey(DIK_Q)) {
+		move.y = kMoveSpd;
+	}
+	else if (input_->PushKey(DIK_E)) {
 		move.y = -kMoveSpd;
 	}
 
