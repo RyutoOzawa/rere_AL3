@@ -23,6 +23,8 @@ public:
 	/// </summary>
 	void Draw(ViewProjection viewProjection);
 
+	WorldTransform getWorldTransform() const { return worldTransform_; };
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;

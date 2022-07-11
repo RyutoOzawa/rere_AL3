@@ -88,6 +88,10 @@ void Player::Update()
 	//行列の更新
 	worldTransform_.MatUpdate();
 
+	//レイの座標を取得
+	startRay = { worldTransform_.translation_.x,worldTransform_.translation_.y,worldTransform_.translation_.z - worldTransform_.scale_.z };
+	endRay= { worldTransform_.translation_.x,worldTransform_.translation_.y,worldTransform_.translation_.z + worldTransform_.scale_.z };
+
 	debugText_->SetPos(50, 130);
 	debugText_->Printf(
 		"pos:%f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);

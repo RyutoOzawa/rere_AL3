@@ -48,5 +48,9 @@ private:
 	DebugText* debugText_ = nullptr;
 
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
+public:
+	Vector3 startRay;
+	Vector3 endRay;
 };
 

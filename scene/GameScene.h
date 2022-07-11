@@ -68,7 +68,7 @@ class GameScene {
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
 
-
+	WorldTransform obj;
 
 public:
 
@@ -80,4 +80,14 @@ public:
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	/// <summary>
+	/// レイの判定
+	/// </summary>
+	/// <param name="startRay">レイの始点</param>
+	/// <param name="endRay">レイの終点</param>
+	/// <param name="obj">オブジェクト</param>
+	/// <returns></returns>
+	bool CollisionRayToObj(Vector3 startRay, Vector3 endRay, WorldTransform obj);
+
 };

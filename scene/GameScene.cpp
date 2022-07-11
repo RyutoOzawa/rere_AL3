@@ -12,6 +12,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
+	//delete obj;
 }
 
 void GameScene::Initialize() {
@@ -39,7 +40,7 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	//自キャラの生成
-	Player* newPlayer =new Player();
+	Player* newPlayer = new Player();
 	newPlayer->Initialize(model_, texutureHandle_);
 	//生成したプレイヤーをしまう
 	player_.reset(newPlayer);
@@ -83,7 +84,9 @@ void GameScene::Initialize() {
 	//軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
-
+	obj.Initialize();
+	obj.translation_ ={ 0,0,20 };
+	obj.scale_ = { 5,5,0 };
 }
 
 void GameScene::Update() {
@@ -112,6 +115,8 @@ void GameScene::Update() {
 	if (enemy_) {
 		enemy_->Update();
 	}
+
+	obj.MatUpdate();
 
 }
 
@@ -143,14 +148,18 @@ void GameScene::Draw() {
 	/// </summary>
 
 	//3Dモデル描画
-	
-		//自キャラ描画
-		player_->Draw(viewProjection_);
 
-		//敵描画
-		if (enemy_) {
-			enemy_->Draw(viewProjection_);
-		}
+		//自キャラ描画
+	player_->Draw(viewProjection_);
+
+	//敵描画
+	if (enemy_) {
+		enemy_->Draw(viewProjection_);
+	}
+
+	if (CollisionRayToObj(player_->startRay, player_->endRay, enemy_->getWorldTransform())) {
+		model_->Draw(obj, viewProjection_, texutureHandle_);
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -171,4 +180,35 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+bool GameScene::CollisionRayToObj(Vector3 startRay, Vector3 endRay, WorldTransform obj)
+{
+	//引数からレイのベクトルを作成
+	Vector3 vecRay = { endRay.x - startRay.x,endRay.y - startRay.y,endRay.z - startRay.z };
+	vecRay.normalize();
+	//レイの始点からオブジェクトへのベクトルを作成
+	Vector3 vecObj = {
+		obj.translation_.x - startRay.x,
+	obj.translation_.y - startRay.y ,
+	obj.translation_.z - startRay.z };
+//	vecObj.normalize();
+	//正規化したレイのベクトルとオブジェクトのベクトルの内積を求める
+	float lengthN = vecRay.dot(vecObj);
+	Vector3 vecN = { 
+		vecRay.x * lengthN,
+		vecRay.y * lengthN,
+		vecRay.z * lengthN};
+
+	Vector3 vecNtoObj = {
+		vecObj.x - vecN.x,
+		vecObj.y - vecN.y,
+		vecObj.z - vecN.z};
+
+	if (vecNtoObj.length() < obj.scale_.length()) {
+		return true;
+	}
+	else return false;
+
+
 }
