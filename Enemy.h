@@ -2,6 +2,12 @@
 #include"Model.h"
 #include"WorldTransform.h"
 
+//行動フェーズ
+enum class Phase {
+	Approach,	//接近する
+	Leave,		//離脱する
+};
+
 /// <summary>
 /// 敵
 /// </summary>
@@ -19,6 +25,16 @@ public:
 	void Update();
 
 	/// <summary>
+	/// 接近フェーズの更新処理
+	/// </summary>
+	void UpdateApproach();
+
+	/// <summary>
+	/// 離脱フェーズの更新処理
+	/// </summary>
+	void UpdateLeave();
+
+	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection viewProjection);
@@ -33,5 +49,7 @@ private:
 
 	//速度
 	Vector3 velocity_;
+
+	Phase phase_ = Phase::Approach;
 };
 
