@@ -85,8 +85,8 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 
 	obj.Initialize();
-	obj.translation_ ={ 0,0,20 };
-	obj.scale_ = { 5,5,0 };
+	obj.translation_ = { 0,0,20 };
+	obj.scale_ = { 5,5,1 };
 }
 
 void GameScene::Update() {
@@ -157,8 +157,11 @@ void GameScene::Draw() {
 		enemy_->Draw(viewProjection_);
 	}
 
-	if (CollisionRayToObj(player_->startRay, player_->endRay, enemy_->getWorldTransform())) {
-		model_->Draw(obj, viewProjection_, texutureHandle_);
+	if (player_->startRay.z < enemy_->getWorldTransform().translation_.z &&
+		player_->endRay.z > enemy_->getWorldTransform().translation_.z) {
+		if (CollisionRayToObj(player_->startRay, player_->endRay, enemy_->getWorldTransform())) {
+			model_->Draw(obj, viewProjection_, texutureHandle_);
+		}
 	}
 
 	// 3Dオブジェクト描画後処理
@@ -192,18 +195,18 @@ bool GameScene::CollisionRayToObj(Vector3 startRay, Vector3 endRay, WorldTransfo
 		obj.translation_.x - startRay.x,
 	obj.translation_.y - startRay.y ,
 	obj.translation_.z - startRay.z };
-//	vecObj.normalize();
-	//正規化したレイのベクトルとオブジェクトのベクトルの内積を求める
+	//	vecObj.normalize();
+		//正規化したレイのベクトルとオブジェクトのベクトルの内積を求める
 	float lengthN = vecRay.dot(vecObj);
-	Vector3 vecN = { 
+	Vector3 vecN = {
 		vecRay.x * lengthN,
 		vecRay.y * lengthN,
-		vecRay.z * lengthN};
+		vecRay.z * lengthN };
 
 	Vector3 vecNtoObj = {
 		vecObj.x - vecN.x,
 		vecObj.y - vecN.y,
-		vecObj.z - vecN.z};
+		vecObj.z - vecN.z };
 
 	if (vecNtoObj.length() < obj.scale_.length()) {
 		return true;
