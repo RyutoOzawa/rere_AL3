@@ -44,7 +44,7 @@ void GameScene::Initialize() {
 	//生成したプレイヤーをしまう
 	player_.reset(newPlayer);
 
-	Vector3 enemyPos{ 0,0,100.0f };
+	Vector3 enemyPos{ 10.0f,10.0f,100.0f };
 
 	//敵の生成
 	Enemy* newEnemy = new Enemy();
