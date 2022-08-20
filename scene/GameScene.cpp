@@ -12,6 +12,7 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
+	delete reticle;
 }
 
 void GameScene::Initialize() {
@@ -34,6 +35,7 @@ void GameScene::Initialize() {
 	//ファイル名を指定してテクスチャを読み込む
 	texutureHandle_ = TextureManager::Load("mario.jpg");
 	enemyTexutureHandle_ = TextureManager::Load("orangeBlock.png");
+	reticleTexture_ = TextureManager::Load("reticle.png");
 
 	//3Dモデルの生成
 	model_ = Model::Create();
@@ -44,6 +46,10 @@ void GameScene::Initialize() {
 	//生成したプレイヤーをしまう
 	player_.reset(newPlayer);
 
+	//レティクルの生成
+	reticle = Sprite::Create(reticleTexture_, { 300,300 });
+
+
 	Vector3 enemyPos{ 10.0f,10.0f,100.0f };
 
 	//敵の生成
@@ -53,10 +59,10 @@ void GameScene::Initialize() {
 	enemy_.reset(newEnemy);
 
 	//カメラ視点座標を設定
-	//viewProjection_.eye = { 0,0,-10 };
+	viewProjection_.eye = { 0,50,0 };
 
 	//カメラ注視点座標を設定
-	//viewProjection_.target = { 10,0,0 };
+	viewProjection_.target = { 0,0,1 };
 
 	//カメラ上方向ベクトルを設定(右上45度設定)
 	//viewProjection_.up = { cosf(MathUtility::PI / 4.0f),sinf(MathUtility::PI / 4.0f),0.0f };
@@ -101,6 +107,12 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 	else {
+		if (input_->PushKey(DIK_J)) {
+			viewProjection_.target.z += 0.05f;
+		}
+		else if (input_->PushKey(DIK_K)) {
+			viewProjection_.target.z -= 0.05f;
+		}
 		viewProjection_.UpdateMatrix();
 		viewProjection_.TransferMatrix();
 	}
@@ -109,10 +121,24 @@ void GameScene::Update() {
 	//自キャラの更新
 	player_->Update();
 
+	reticle->SetPosition(Vector2{ player_->GetWorldTransform().translation_.x, player_->GetWorldTransform().translation_.z + 5.0f });
+
 	if (enemy_) {
 		enemy_->Update();
 	}
 
+	
+
+
+
+	debugText_->SetPos(50, 200);
+	debugText_->Printf("cameraPos:%f,%f,%f", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+
+	debugText_->SetPos(50, 220);
+	debugText_->Printf("cameraTarget:%f,%f,%f", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
+
+	debugText_->SetPos(50, 240);
+	debugText_->Printf("camerafov:%f", viewProjection_.fovAngleY);
 }
 
 void GameScene::Draw() {
@@ -163,6 +189,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	reticle->Draw();
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

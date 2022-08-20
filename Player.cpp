@@ -50,10 +50,10 @@ void Player::Update()
 	}
 
 	if (input_->PushKey(DIK_W)) {
-		move.y = kMoveSpd;
+		move.z = kMoveSpd;
 	}
 	else if (input_->PushKey(DIK_S)) {
-		move.y = -kMoveSpd;
+		move.z = -kMoveSpd;
 	}
 
 	worldTransform_.translation_ += move;
@@ -63,10 +63,10 @@ void Player::Update()
 	const float kMoveLimitY = 18.0f;
 
 	//”ÍˆÍ‚ğ’´‚¦‚È‚¢ˆ—
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
+	/*worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);*/
 
 	//UŒ‚ˆ—
 	Attack();

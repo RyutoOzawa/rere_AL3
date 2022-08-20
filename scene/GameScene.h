@@ -53,6 +53,7 @@ class GameScene {
 	//テクスチャハンドル
 	uint32_t texutureHandle_ = 0;
 	uint32_t enemyTexutureHandle_ = 0;
+	uint32_t reticleTexture_ = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
@@ -68,7 +69,8 @@ class GameScene {
 	//カメラ上方向の角度
 	float viewAngle = 0.0f;
 
-
+	//レティクル
+	Sprite* reticle = nullptr;
 
 public:
 
