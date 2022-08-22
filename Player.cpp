@@ -87,13 +87,7 @@ void Player::Update()
 	//s—ñ‚ÌXV
 	worldTransform_.MatUpdate();
 
-	debugText_->SetPos(50, 130);
-	debugText_->Printf(
-		"pos:%f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
 
-	debugText_->SetPos(50, 150);
-	debugText_->Printf(
-		"reticlepos:%f,%f,%f",reticlePos.x, reticlePos.y, reticlePos.z);
 
 }
 

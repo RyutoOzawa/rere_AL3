@@ -17,7 +17,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 pos)
 	//初期座標に移動
 	worldTransform_.translation_ = pos;
 
-	velocity_ = { 0,0,-1 };
+	velocity_ = { 0,0,-0.25f };
 
 	//接近フェーズ初期化
 	InitializeApproach();
@@ -34,7 +34,9 @@ void Enemy::Update()
 		UpdateApproach();
 		break;
 	case Phase::Leave:
-		UpdateLeave();
+		//UpdateLeave();
+		worldTransform_.translation_.z += 100.0f ;
+		phase_ = Phase::Approach;
 		break;
 	default:
 		break;
@@ -73,7 +75,7 @@ void Enemy::UpdateApproach()
 	worldTransform_.translation_ += approachVelocity;
 
 	//特定の位置に到達したら離脱フェーズへ
-	if (worldTransform_.translation_.z < 0) {
+	if (worldTransform_.translation_.z < -15) {
 		phase_ = Phase::Leave;
 	}
 }
@@ -97,7 +99,7 @@ void Enemy::Draw(ViewProjection viewProjection)
 void Enemy::Fire()
 {
 	//弾の速度
-	const float kBulletSpd = -1.0f;
+	const float kBulletSpd = -0.5f;
 	Vector3 velocity(0, 0, kBulletSpd);
 
 	//速度ベクトルを自機の向きに合わせて回転させる

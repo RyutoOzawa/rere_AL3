@@ -16,6 +16,8 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position, const Vecto
 	worldTransform_.translation_ = position;
 	//引数で受け取った速度をセット
 	velocity_ = velocity;
+
+	worldTransform_.scale_ = { 0.25f,0.25f,0.25f };
 }
 
 void PlayerBullet::Update()

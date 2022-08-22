@@ -33,7 +33,7 @@ void GameScene::Initialize() {
 
 
 	//ファイル名を指定してテクスチャを読み込む
-	texutureHandle_ = TextureManager::Load("mario.jpg");
+	texutureHandle_ = TextureManager::Load("player.jpg");
 	enemyTexutureHandle_ = TextureManager::Load("orangeBlock.png");
 	reticleTexture_ = TextureManager::Load("reticle.png");
 
@@ -130,14 +130,14 @@ void GameScene::Update() {
 
 
 
-	debugText_->SetPos(50, 200);
-	debugText_->Printf("cameraPos:%f,%f,%f", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+	//debugText_->SetPos(50, 200);
+	//debugText_->Printf("cameraPos:%f,%f,%f", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 
-	debugText_->SetPos(50, 220);
-	debugText_->Printf("cameraTarget:%f,%f,%f", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
+	//debugText_->SetPos(50, 220);
+	//debugText_->Printf("cameraTarget:%f,%f,%f", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
 
-	debugText_->SetPos(50, 240);
-	debugText_->Printf("camerafov:%f", viewProjection_.fovAngleY);
+	//debugText_->SetPos(50, 240);
+	//debugText_->Printf("camerafov:%f", viewProjection_.fovAngleY);
 }
 
 void GameScene::Draw() {

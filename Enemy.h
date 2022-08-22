@@ -77,6 +77,6 @@ private:
 
 public:
 	//”­ŽËŠÔŠu
-	static const int kFireInterval = 60;
+	static const int kFireInterval = 90;
 };
 
