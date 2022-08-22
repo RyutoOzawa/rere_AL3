@@ -11,8 +11,8 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete modelReticle_;
 	delete debugCamera_;
-	delete reticle;
 }
 
 void GameScene::Initialize() {
@@ -47,8 +47,8 @@ void GameScene::Initialize() {
 	player_.reset(newPlayer);
 
 	//レティクルの生成
-	reticle = Sprite::Create(reticleTexture_, { 300,300 });
-
+	modelReticle_ = Model::CreateFromOBJ("redReticle", true);
+	player_->reticle.Initialize(modelReticle_);
 
 	Vector3 enemyPos{ 10.0f,10.0f,100.0f };
 
@@ -121,8 +121,7 @@ void GameScene::Update() {
 	//自キャラの更新
 	player_->Update();
 
-	reticle->SetPosition(Vector2{ player_->GetWorldTransform().translation_.x, player_->GetWorldTransform().translation_.z + 5.0f });
-
+	
 	if (enemy_) {
 		enemy_->Update();
 	}
@@ -190,7 +189,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	reticle->Draw();
+	//reticle->Draw();
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);

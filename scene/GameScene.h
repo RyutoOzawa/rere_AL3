@@ -70,7 +70,7 @@ class GameScene {
 	float viewAngle = 0.0f;
 
 	//レティクル
-	Sprite* reticle = nullptr;
+	Model* modelReticle_ = nullptr;
 
 public:
 

@@ -7,6 +7,7 @@
 #include"PlayerBullet.h"
 #include<memory>
 #include<list>
+#include"Reticle.h"
 
 class Player
 {
@@ -38,6 +39,9 @@ public:
 
 	WorldTransform GetWorldTransform() const { return worldTransform_; }
 
+	//レティクル
+	Reticle reticle;
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -51,5 +55,7 @@ private:
 
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>> bullets_;
+
+
 };
 

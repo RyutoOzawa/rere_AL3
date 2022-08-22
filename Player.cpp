@@ -68,6 +68,14 @@ void Player::Update()
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);*/
 
+	//レティクルの移動処理
+	Vector3 reticlePos = worldTransform_.translation_;
+	reticlePos.z += 10.0f;
+	//reticlePos.x -= 1.0f;
+	//reticlePos.x = worldTransform_.translation_.x;
+	reticle.SetPos(reticlePos);
+	reticle.Update();
+
 	//攻撃処理
 	Attack();
 
@@ -83,6 +91,10 @@ void Player::Update()
 	debugText_->Printf(
 		"pos:%f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
 
+	debugText_->SetPos(50, 150);
+	debugText_->Printf(
+		"reticlepos:%f,%f,%f",reticlePos.x, reticlePos.y, reticlePos.z);
+
 }
 
 void Player::Draw(ViewProjection viewProjection)
@@ -93,6 +105,9 @@ void Player::Draw(ViewProjection viewProjection)
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Draw(viewProjection);
 	}
+
+	//レティクル描画
+	reticle.Draw(viewProjection);
 }
 
 void Player::Rotate()
