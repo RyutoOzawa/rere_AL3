@@ -1,5 +1,7 @@
 #include "Enemy.h"
+#include"Player.h"
 #include<cassert>
+#include<random>
 using namespace MathUtility;
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle,Vector3 pos)
@@ -28,18 +30,38 @@ void Enemy::Update()
 	////速度分移動
 	//worldTransform_.translation_ += velocity_;
 
-	switch (phase_) {
-	
-	case Phase::Approach:
-		UpdateApproach();
-		break;
-	case Phase::Leave:
-		//UpdateLeave();
-		worldTransform_.translation_.z += 100.0f ;
-		phase_ = Phase::Approach;
-		break;
-	default:
-		break;
+	if (isAlive) {
+
+		switch (phase_) {
+
+		case Phase::Approach:
+			UpdateApproach();
+			break;
+		case Phase::Leave:
+			UpdateLeave();
+			/*worldTransform_.translation_.z += 100.0f ;
+			phase_ = Phase::Approach;*/
+			break;
+		default:
+			break;
+		}
+	}
+	else if (!isAlive) {
+		if (spawnTimer > 0) {
+			spawnTimer--;
+		}
+		else if (spawnTimer == 0) {
+			isAlive = true;
+			//乱数シード生成器
+			std::random_device seed_gen;
+			//メルセンヌ・ツイスターの乱数エンジン
+			std::mt19937_64 engine(seed_gen());
+
+			//座標用の乱数範囲の指定
+			std::uniform_real_distribution<float> posDist(-10, 10);
+			worldTransform_.translation_ = { posDist(engine),0,100.0f };
+			phase_ = Phase::Approach;
+		}
 	}
 
 	//弾更新
@@ -70,45 +92,104 @@ void Enemy::UpdateApproach()
 	}
 
 	//接近フェーズの速度
-	Vector3 approachVelocity = { 0,0,-0.25f };
+	Vector3 approachVelocity = { 0,0,-0.15f };
 	//移動
 	worldTransform_.translation_ += approachVelocity;
 
 	//特定の位置に到達したら離脱フェーズへ
-	if (worldTransform_.translation_.z < -15) {
+	if (worldTransform_.translation_.z < -0) {
 		phase_ = Phase::Leave;
 	}
 }
 
 void Enemy::UpdateLeave()
 {
-	Vector3 leaveVelocity = { 0.5f,0.5f,-0.5f };
+	Vector3 leaveVelocity = { 0.25f,0.0f,-0.0f };
+	if (worldTransform_.translation_.x > 0) {
+		leaveVelocity.x = 0.1f;
+	}
+	else {
+		leaveVelocity.x = -0.1f;
+	}
+
 	//移動
 	worldTransform_.translation_ += leaveVelocity;
+
+	//40を超えたら座標リセット
+	if (fabs(worldTransform_.translation_.x) > 40) {
+		//乱数シード生成器
+		std::random_device seed_gen;
+		//メルセンヌ・ツイスターの乱数エンジン
+		std::mt19937_64 engine(seed_gen());
+
+		//座標用の乱数範囲の指定
+		std::uniform_real_distribution<float> posDist(-10, 10);
+		worldTransform_.translation_ ={ posDist(engine),0,100.0f };
+		phase_ = Phase::Approach;
+	}
 }
 
 void Enemy::Draw(ViewProjection viewProjection)
 {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	if (isAlive) {
+		model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	}
 
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(viewProjection);
+		if (!bullet->IsDead()) {
+			bullet->Draw(viewProjection);
+		}
 	}
 }
 
 void Enemy::Fire()
 {
 	//弾の速度
-	const float kBulletSpd = -0.5f;
-	Vector3 velocity(0, 0, kBulletSpd);
+	const float kBulletSpd = 0.25f;
+	// 差分ベクトルを格納する変数
+	Vector3 diffVec;
 
-	//速度ベクトルを自機の向きに合わせて回転させる
-	velocity = Vector3MultiTransform(velocity, worldTransform_.matWorld_);
+	// 自キャラ、敵キャラのワールド座標を取得
+	Vector3 playerPos = player_->GetWorldPos();
+	Vector3 enemyPos = worldTransform_.translation_;
+
+	// 差分ベクトルを求める
+	diffVec = playerPos - enemyPos;
+
+	// 差分ベクトルの正規化
+	diffVec.normalize();
+
+	// ベクトルの長さを、速さに合わせる。( ←は？ )
+	diffVec *= kBulletSpd;
+
+
 
 	//弾の生成と追加
 	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	newBullet->Initialize(model_, worldTransform_.translation_, diffVec);
 
 	enemyBullets_.push_back(std::move(newBullet));
 
+}
+
+Vector3 Enemy::GetworldPos()
+{
+	Vector3 worldPos;
+
+	worldPos = worldTransform_.translation_;
+
+	return worldPos;
+}
+
+void Enemy::OnCollision()
+{
+	isAlive = false;
+	spawnTimer = spawnInterval;
+}
+
+void Enemy::Spawn(Vector3 pos)
+{
+	phase_ = Phase::Approach;
+	worldTransform_.translation_ = pos;
+	isAlive = true;
 }

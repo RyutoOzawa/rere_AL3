@@ -27,6 +27,13 @@ public:
 
 	bool IsDead()const { return isDead_; };
 
+	//衝突を検知したら呼び出されるコールバック関数
+	void OnCollision();
+
+	Vector3 GetWorldPos();
+
+	
+
 private:
 	WorldTransform worldTransform_;
 	Model* model_ = nullptr;
@@ -42,5 +49,7 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	//デスフラグ
 	bool isDead_ = false;
+
+	
 };
 

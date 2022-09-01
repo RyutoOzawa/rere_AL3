@@ -39,8 +39,16 @@ public:
 
 	WorldTransform GetWorldTransform() const { return worldTransform_; }
 
+	Vector3 GetWorldPos();
+
+	//衝突を検知したら呼び出されるコールバック関数
+	void OnCollision();
+
 	//レティクル
 	Reticle reticle;
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
 private:
 	//ワールド変換データ

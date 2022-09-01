@@ -23,7 +23,7 @@ void Player::Update()
 {
 	//デバッグ用
 	if (input_->PushKey(DIK_J)) {
-		worldTransform_.scale_.x += 0.05f;
+		worldTransform_.scale_.x += 0.025f;
 	}
 	else 	if (input_->PushKey(DIK_K)) {
 		worldTransform_.scale_.x -= 0.05f;
@@ -40,7 +40,7 @@ void Player::Update()
 
 	//キャラクター移動
 	Vector3 move = { 0,0,0 };
-	const float kMoveSpd = 0.5f;
+	const float kMoveSpd = 0.2f;
 
 	if (input_->PushKey(DIK_A)) {
 		move.x = -kMoveSpd;
@@ -87,7 +87,8 @@ void Player::Update()
 	//行列の更新
 	worldTransform_.MatUpdate();
 
-
+	//debugText_->SetPos(50, 200);
+	//debugText_->Printf("Pos:%f,%f,%f", worldTransform_.translation_.x, worldTransform_.translation_.y, worldTransform_.translation_.z);
 
 }
 
@@ -97,7 +98,9 @@ void Player::Draw(ViewProjection viewProjection)
 
 	//弾描画
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
-		bullet->Draw(viewProjection);
+		if (!bullet->IsDead()) {
+			bullet->Draw(viewProjection);
+		}
 	}
 
 	//レティクル描画
@@ -132,4 +135,17 @@ void Player::Attack()
 
 		bullets_.push_back(std::move(newBullet));
 	}
+}
+
+Vector3 Player::GetWorldPos()
+{
+	Vector3 worldPos;
+
+	worldPos = worldTransform_.translation_;
+
+	return worldPos;
+}
+
+void Player::OnCollision()
+{
 }

@@ -14,6 +14,9 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.Initialize();
 	//引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
+
+	worldTransform_.scale_ = { 0.5f,0.5f,0.5f };
+
 	//引数で受け取った速度をセット
 	velocity_ = velocity;
 }
@@ -35,4 +38,18 @@ void EnemyBullet::Update()
 void EnemyBullet::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}
+
+void EnemyBullet::OnCollision()
+{
+	isDead_ = true;
+}
+
+Vector3 EnemyBullet::GetWorldPos()
+{
+	Vector3 worldPos;
+
+	worldPos = worldTransform_.translation_;
+
+	return worldPos;
 }

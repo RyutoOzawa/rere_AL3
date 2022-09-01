@@ -8,6 +8,10 @@
 #include<memory>
 #include<list>
 
+//自機クラスの前方宣言
+class Player;
+
+
 //行動フェーズ
 enum class Phase {
 	Approach,	//接近する
@@ -56,6 +60,19 @@ public:
 	/// </summary>
 	void Fire();
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	Vector3 GetworldPos();
+
+	//衝突を検知したら呼び出されるコールバック関数
+	void OnCollision();
+
+	//弾リストを取得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return enemyBullets_; }
+
+	bool GetAlive() { return isAlive; }
+
+	void Spawn(Vector3 pos);
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -72,11 +89,19 @@ private:
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>> enemyBullets_;
 
+	//自キャラ
+	Player* player_ = nullptr;
+
 	//弾の発射タイマー
 	int32_t fireTimer = 0;
 
+	bool isAlive = false;
+
+	int spawnInterval = 60;
+	int spawnTimer = 0;
+
 public:
 	//発射間隔
-	static const int kFireInterval = 90;
+	static const int kFireInterval = 180;
 };
 

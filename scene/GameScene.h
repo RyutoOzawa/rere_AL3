@@ -44,6 +44,11 @@ class GameScene {
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 衝突判定と応答
+	/// </summary>
+	void CheckAllCollisions();
+
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -54,9 +59,12 @@ class GameScene {
 	uint32_t texutureHandle_ = 0;
 	uint32_t enemyTexutureHandle_ = 0;
 	uint32_t reticleTexture_ = 0;
+	uint32_t titleTexture_ = 0;
+	uint32_t gameoverTex_ = 0;
 
 	//3Dモデル
 	Model* model_ = nullptr;
+	Model* playerModel = nullptr;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
@@ -72,6 +80,16 @@ class GameScene {
 	//レティクル
 	Model* modelReticle_ = nullptr;
 
+	int spawnCooltime = 60 * 2;
+
+	int spawnTime = 0;
+
+	Enemy enemys[10];
+
+	Sprite* title = nullptr;
+	Sprite* gameover = nullptr;
+
+	int scene = 0;
 public:
 
 	//自キャラ
