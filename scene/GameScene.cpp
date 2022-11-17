@@ -114,7 +114,16 @@ void GameScene::Update() {
 
 	if (enemy_) {
 		enemy_->Update();
+
 	}
+
+	WorldTransform enemyTransform = enemy_->getWorldTransform();
+	Vector3 translation = enemyTransform.translation_;
+	Vector3 scale = enemyTransform.scale_;
+
+	rayStart = Vector3(translation.x - scale.x, translation.y - scale.y, translation.z - scale.z);
+	rayEnd = Vector3(translation.x + scale.x, translation.y + scale.y, translation.z + scale.z);
+
 
 	obj.MatUpdate();
 
@@ -163,6 +172,13 @@ void GameScene::Draw() {
 			model_->Draw(obj, viewProjection_, texutureHandle_);
 		}
 	}
+
+	//if (player_->startRay.z < enemy_->getWorldTransform().translation_.z &&
+	//	player_->endRay.z > enemy_->getWorldTransform().translation_.z) {
+	//	if (CollisionRayToObj(rayStart, rayEnd,player_->GetWorldTransform())) {
+	//		model_->Draw(obj, viewProjection_, texutureHandle_);
+	//	}
+	//}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

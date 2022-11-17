@@ -70,6 +70,9 @@ class GameScene {
 
 	WorldTransform obj;
 
+	Vector3 rayStart{};
+	Vector3 rayEnd{};
+
 public:
 
 	//自キャラ

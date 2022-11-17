@@ -42,7 +42,7 @@ void Player::Update()
 
 	//キャラクター移動
 	Vector3 move = { 0,0,0 };
-	const float kMoveSpd = 0.025f;
+	const float kMoveSpd = 0.125f;
 
 	if (input_->PushKey(DIK_A)) {
 		move.x = -kMoveSpd;

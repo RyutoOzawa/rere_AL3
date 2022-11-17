@@ -36,6 +36,8 @@ public:
 	/// </summary>
 	void Attack();
 
+	WorldTransform GetWorldTransform() const { return worldTransform_; }
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
